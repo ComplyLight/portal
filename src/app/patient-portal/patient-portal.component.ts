@@ -8,8 +8,9 @@ import { PatientService } from '../patient.service';
 import { Bundle, Consent, FhirResource, Patient } from 'fhir/r5';
 import { ConsentService } from '../consent/consent.service';
 import { CdsService } from '../cds/cds.service';
-import { Card, ConsentCategorySettings, ConsentDecision, ConsoleDataSharingEngine, DataSharingCDSHookRequest, DummyRuleProvider } from '@asushares/core';
+import { Card, ConsentDecision, DataSegmentationModule, DataSharingCDSHookRequest } from '@complylight/core';
 import { ToastrService } from 'ngx-toastr';
+import { ModuleRegistryService } from '../core/module-registry.service';
 
 type ResourceIndex = { [key: string]: FhirResource[] };
 
@@ -174,7 +175,7 @@ export class PatientPortalComponent implements OnInit, OnDestroy {
   filtersVisible: boolean = false;
   sharingDecisionMode: 'all' | 'permit' | 'deny' = 'all';
   filterCategoryMode: 'all' | 'only' | 'except' = 'all';
-  filterCategorySettings = new ConsentCategorySettings();
+  filterCategorySettings: DataSegmentationModule;
 
   sections = [
     { id: 'medications', title: 'medications', types: ['MedicationStatement','MedicationRequest'], headers: ['medication','dosage','frequency','route','status'], keys: ['medication','dosage','frequency','route','status'] },
@@ -187,7 +188,9 @@ export class PatientPortalComponent implements OnInit, OnDestroy {
     { id: 'documents', title: 'documents and notes', types: ['DocumentReference'], headers: ['document','author','date','organization'], keys: ['document','author','date','organization'] },
   ];
 
-  constructor(private route: ActivatedRoute, private patientService: PatientService, private consentService: ConsentService, private cdsService: CdsService, private toastr: ToastrService) {}
+  constructor(private route: ActivatedRoute, private patientService: PatientService, private consentService: ConsentService, private cdsService: CdsService, private toastr: ToastrService, private moduleRegistryService: ModuleRegistryService) {
+    this.filterCategorySettings = this.moduleRegistryService.getMergedModule();
+  }
 
   ngOnInit(): void {
     this.patientId = this.route.snapshot.paramMap.get('patient_id');

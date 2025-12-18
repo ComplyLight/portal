@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Bundle, Consent, Patient, Organization } from 'fhir/r5';
-import { ConsentCategorySettings } from '@asushares/core';
+import { DataSegmentationModule } from '@complylight/core';
 import { v4 as uuidv4 } from 'uuid';
 import { PatientService } from '../patient.service';
 import { ConsentService } from '../consent/consent.service';
 import { OrganizationService } from '../organization.service';
+import { ModuleRegistryService } from '../core/module-registry.service';
 import { Highlight } from 'ngx-highlightjs';
 // no advanced provision component (yet :s); patient flow uses per-category resource toggles
 
@@ -297,7 +298,8 @@ export class PatientConsentBuilderComponent implements OnInit {
               private router: Router,
               private patientService: PatientService,
               private consentService: ConsentService,
-              private organizationService: OrganizationService) {}
+              private organizationService: OrganizationService,
+              private moduleRegistryService: ModuleRegistryService) {}
 
   ngOnInit(): void {
     this.patientId = this.route.snapshot.paramMap.get('patient_id');
@@ -487,22 +489,47 @@ export class PatientConsentBuilderComponent implements OnInit {
     // set top-level decision explicitly
     (this.consentDraft as any).decision = (this.shareMode === 'none' || this.shareMode === 'custom') ? 'deny' : 'permit';
 
-    const settingsAll = new ConsentCategorySettings();
+    const settingsAll = this.moduleRegistryService.getMergedModule();
+    
+    // Map CategoryKey to category codes
+    const categoryCodeMap: Record<CategoryKey, string> = {
+      Demographics: 'DEMO',
+      Diagnoses: 'DIA',
+      Disabilities: 'DIS',
+      Genetics: 'GDIS',
+      InfectiousDiseases: 'DISEASE',
+      Medications: 'DRGIS',
+      MentalHealth: 'MENCAT',
+      SexualAndReproductiveHealth: 'SEX',
+      SocialDeterminantsOfHealth: 'SOCIAL',
+      SubstanceUse: 'SUD',
+      Violence: 'VIO'
+    };
+
     if (this.shareMode === 'custom' || this.shareMode === 'allExcept') {
       // custom: reflect user toggles
-      settingsAll.demographics.enabled = !!this.selected.Demographics;
-      settingsAll.diagnoses.enabled = !!this.selected.Diagnoses;
-      settingsAll.disabilities.enabled = !!this.selected.Disabilities;
-      settingsAll.genetics.enabled = !!this.selected.Genetics;
-      settingsAll.infectiousDiseases.enabled = !!this.selected.InfectiousDiseases;
-      settingsAll.medications.enabled = !!this.selected.Medications;
-      settingsAll.mentalHealth.enabled = !!this.selected.MentalHealth;
-      settingsAll.sexualAndReproductive.enabled = !!this.selected.SexualAndReproductiveHealth;
-      settingsAll.socialDeterminants.enabled = !!this.selected.SocialDeterminantsOfHealth;
-      settingsAll.substanceUse.enabled = !!this.selected.SubstanceUse;
-      settingsAll.violence.enabled = !!this.selected.Violence;
-      settingsAll.treatment.enabled = !!this.purposes.treatment;
-      settingsAll.research.enabled = !!this.purposes.research;
+      // Set category enabled states based on selected toggles
+      Object.keys(this.selected).forEach((key) => {
+        const categoryKey = key as CategoryKey;
+        const code = categoryCodeMap[categoryKey];
+        if (code) {
+          const category = settingsAll.categoryForCode(code);
+          if (category) {
+            category.enabled = !!this.selected[categoryKey];
+          }
+        }
+      });
+      
+      // Set purpose enabled states
+      const treatmentPurpose = settingsAll.purposeForCode('HIPAAConsentCD');
+      if (treatmentPurpose) {
+        treatmentPurpose.enabled = !!this.purposes.treatment;
+      }
+      const researchPurpose = settingsAll.purposeForCode('RESEARCH');
+      if (researchPurpose) {
+        researchPurpose.enabled = !!this.purposes.research;
+      }
+      
       // semantics:
       //  - custom (deny these categories): decision is deny; enabled categories represent masked labels
       //  - allExcept (permit others): decision is permit; enabled categories represent masked labels
@@ -510,11 +537,16 @@ export class PatientConsentBuilderComponent implements OnInit {
       settingsAll.updateConsentProvision(pAll);
     } else {
       // all/none: no subcategory securityLabels; only purposes (if any)
-      settingsAll.treatment.enabled = !!this.purposes.treatment;
-      settingsAll.research.enabled = !!this.purposes.research;
-      // apply purposes only
-      settingsAll.updateConsentProvisionPurpose(pAll, settingsAll.treatment);
-      settingsAll.updateConsentProvisionPurpose(pAll, settingsAll.research);
+      const treatmentPurpose = settingsAll.purposeForCode('HIPAAConsentCD');
+      if (treatmentPurpose) {
+        treatmentPurpose.enabled = !!this.purposes.treatment;
+        settingsAll.updateConsentProvisionPurpose(pAll, treatmentPurpose);
+      }
+      const researchPurpose = settingsAll.purposeForCode('RESEARCH');
+      if (researchPurpose) {
+        researchPurpose.enabled = !!this.purposes.research;
+        settingsAll.updateConsentProvisionPurpose(pAll, researchPurpose);
+      }
     }
 
     const provisions: any[] = [pAll];

@@ -10,7 +10,7 @@ import { ConsentService } from '../consent/consent.service';
 import { PatientService } from '../patient.service';
 import { CdsService } from '../cds/cds.service';
 import { BackendService } from '../backend/backend.service';
-import { Card, DataSharingCDSHookRequest } from '@asushares/core';
+import { Card, DataSharingCDSHookRequest } from '@complylight/core';
 
 type ResourceGroups = { [resourceType: string]: FhirResource[] };
 

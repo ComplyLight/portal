@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { CdsService } from '../cds/cds.service';
-// import { DataSharingCDSHookRequest } from '@asushares/core';
+// import { DataSharingCDSHookRequest } from '@complylight/core';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
-import { DataSharingCDSHookRequest, DataSharingEngineContext } from '@asushares/core';
+import { DataSharingCDSHookRequest, DataSharingEngineContext } from '@complylight/core';
 import { Bundle, FhirResource } from 'fhir/r5';
 import { ToastrService } from 'ngx-toastr';
 

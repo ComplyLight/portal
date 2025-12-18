@@ -9,7 +9,7 @@ steps:
   - name: publish
     image: plugins/docker
     settings:
-      repo: asushares/portal
+      repo: complylight/portal
       tags:
         - ${DRONE_COMMIT_BRANCH}-linux-amd64
       username:
@@ -27,7 +27,7 @@ steps:
   - name: publish
     image: plugins/docker
     settings:
-      repo: asushares/portal
+      repo: complylight/portal
       tags:
         - ${DRONE_COMMIT_BRANCH}-linux-arm64
       username:
@@ -49,8 +49,8 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      target: asushares/portal:latest
-      template: asushares/portal:master-OS-ARCH
+      target: complylight/portal:latest
+      template: complylight/portal:master-OS-ARCH
       platforms:
         - linux/amd64
         - linux/arm64

@@ -4,13 +4,13 @@ import { CommonModule } from "@angular/common";
 import { Component, OnChanges, SimpleChanges, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 
-import { ConsentCategorySettings } from "@asushares/core";
 import { ProvisionCentricComponent } from "../provision/provision-centric.component";
 import { v4 as uuidv4 } from 'uuid';
 import { SettingsService } from "../settings/settings.service";
 
 @Component({
     selector: 'category-selector',
+    standalone: true,
     templateUrl: './category-selector.component.html',
     styleUrl: './category-selector.component.scss',
     imports: [CommonModule, FormsModule]

@@ -6,7 +6,7 @@ import { BaseComponent } from "../base/base.component";
 import { OrganizationService } from "../organization.service";
 import { PatientService } from "../patient.service";
 import { ConsentService } from "./consent.service";
-import { ConsentTemplate } from "@asushares/core";
+import { ConsentTemplate } from "@complylight/core";
 
 export abstract class ConsentBasedComponent extends BaseComponent {
 

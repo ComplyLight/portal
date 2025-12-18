@@ -6,14 +6,16 @@ import { Consent, ConsentProvision } from 'fhir/r5';
 import { v4 as uuidv4 } from 'uuid';
 
 import { BaseComponent } from '../base/base.component';
-import { ConsentCategorySettings, ConsentTemplate } from '@asushares/core';
+import { ConsentTemplate, DataSegmentationModule } from '@complylight/core';
 import { FormsModule } from '@angular/forms';
 import { CategorySelectorComponent } from "../provision-selector/category-selector.component";
 import { ProvisionCentricComponent } from './provision-centric.component';
 import { PurposeSelectorComponent } from '../provision-selector/purpose-selector.component';
+import { ModuleRegistryService } from '../core/module-registry.service';
 
 @Component({
     selector: 'provision',
+    standalone: true,
     templateUrl: './provision.component.html',
     styleUrl: './provision.component.scss',
     imports: [NgIf, FormsModule, NgFor, CategorySelectorComponent, PurposeSelectorComponent]
@@ -22,7 +24,7 @@ export class ProvisionComponent extends ProvisionCentricComponent implements OnC
 
   @Input() container: Consent | ConsentProvision | null = null;
 
-  constructor() {
+  constructor(protected moduleRegistryService: ModuleRegistryService) {
     super();
     console.log('ProvisionComponent constructor', this.container);
   }
@@ -67,7 +69,7 @@ export class ProvisionComponent extends ProvisionCentricComponent implements OnC
   loadSharingSettingsFromProvision() {
     if (this.provision) {
       console.log("Loading all sharing settings from provision id: ", this.provision.id);
-      const tmp = new ConsentCategorySettings();
+      const tmp = this.moduleRegistryService.getMergedModule();
       tmp.loadAllFromConsentProvision(this.provision);
       this.categorySettings = tmp;
     } else {

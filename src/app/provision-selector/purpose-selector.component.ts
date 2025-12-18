@@ -4,13 +4,13 @@ import { CommonModule } from "@angular/common";
 import { Component, SimpleChanges, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 
-import { ConsentCategorySettings } from "@asushares/core";
 import { ProvisionCentricComponent } from "../provision/provision-centric.component";
 import { v4 as uuidv4 } from 'uuid';
 import { SettingsService } from "../settings/settings.service";
 
 @Component({
     selector: 'purpose-selector',
+    standalone: true,
     templateUrl: './purpose-selector.component.html',
     styleUrl: './purpose-selector.component.scss',
     imports: [CommonModule, FormsModule]

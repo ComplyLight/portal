@@ -6,6 +6,7 @@ import { ConsentService } from './app/consent/consent.service';
 import { PatientService } from './app/patient.service';
 import { SettingsService } from './app/settings/settings.service';
 import { CdsService } from './app/cds/cds.service';
+import { ModuleRegistryService } from './app/core/module-registry.service';
 import { provideHighlightOptions } from 'ngx-highlightjs';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
@@ -34,7 +35,8 @@ bootstrapApplication(AppComponent, {
         ConsentService,
         PatientService,
         SettingsService,
-        CdsService
+        CdsService,
+        ModuleRegistryService
     ]
 })
   .catch(err => console.error(err));

@@ -8,7 +8,7 @@ import { OrganizationService } from '../organization.service';
 import { ConsentService } from '../consent/consent.service';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PatientService } from '../patient.service';
-import { ConsentTemplate } from '@asushares/core';
+import { ConsentTemplate } from '@complylight/core';
 import { ConsentBasedComponent } from '../consent/consent-based.component';
 import { Highlight } from 'ngx-highlightjs';
 import { HighlightLineNumbers } from 'ngx-highlightjs/line-numbers';

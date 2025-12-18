@@ -8,7 +8,7 @@ import { OrganizationService } from '../organization.service';
 import { ConsentService } from '../consent/consent.service';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PatientService } from '../patient.service';
-import { AbstractSensitivityRuleProvider, Card, ConsentCategorySettings, ConsentDecision, ConsentExtension, ConsentTemplate, ConsoleDataSharingEngine, DataSharingCDSHookRequest, DenyCard, DummyRuleProvider, InformationCategorySetting, PermitCard } from '@asushares/core';
+import { Card, ConsentDecision, ConsentExtension, ConsentTemplate, ConsoleDataSharingEngine, DataSegmentationModule, DataSharingCDSHookRequest, DenyCard, DummyDataSegmentationModuleProvider, InformationCategorySetting, PermitCard } from '@complylight/core';
 import { ConsentBasedComponent } from '../consent/consent-based.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,6 +23,7 @@ import { CdsService } from '../cds/cds.service';
 import { ToastrService } from 'ngx-toastr';
 import { PatientDataCache } from './patient_data_cache';
 import { SettingsService } from '../settings/settings.service';
+import { ModuleRegistryService } from '../core/module-registry.service';
 
 
 @Component({
@@ -47,7 +48,7 @@ export class SimulatorComponent extends ConsentBasedComponent {
     labelConfidenceThreshold: number = 0.0;
 
     filterCategoryMode: FilterMode = FilterMode.ALL;
-    filterCategorySettings: ConsentCategorySettings = this.createConsentCategorySettings();
+    filterCategorySettings: DataSegmentationModule = this.createModule();
 
     sharingDecisionMode: ConsentDecision = ConsentDecision.NO_CONSENT;
 
@@ -57,16 +58,16 @@ export class SimulatorComponent extends ConsentBasedComponent {
 
     public static CACHE_KEY: string = 'cache';
 
-    createConsentCategorySettings(): ConsentCategorySettings {
-        let settings = new ConsentCategorySettings();
+    createModule(): DataSegmentationModule {
+        const module = this.moduleRegistryService.getMergedModule();
 
-        // Set these to true by default.
-        settings.allPurposes().forEach(p => {
+        // Set purposes to true by default.
+        module.allPurposes().forEach(p => {
             let tmp = { system: p.system, code: p.act_code, display: p.description };
             console.log('Adding purpose:', tmp);
             this.simulatorProvision.purpose?.push(tmp);
         });
-        return settings;
+        return module;
     }
 
     constructor(public override route: ActivatedRoute,
@@ -77,6 +78,7 @@ export class SimulatorComponent extends ConsentBasedComponent {
         protected libraryService: LibraryService,
         protected backendService: BackendService,
         protected settingsService: SettingsService,
+        protected moduleRegistryService: ModuleRegistryService,
         protected http: HttpClient,
         protected toastrService: ToastrService,
         protected cdr: ChangeDetectorRef) {
@@ -87,7 +89,7 @@ export class SimulatorComponent extends ConsentBasedComponent {
             let c_id = pm.get('consent_id')!;
             if (c_id) {
                 this.loadConsent(c_id);
-                this.filterCategorySettings = this.createConsentCategorySettings();
+                this.filterCategorySettings = this.createModule();
             } else {
                 this.resetSimulator();
             }
@@ -461,11 +463,11 @@ export class SimulatorComponent extends ConsentBasedComponent {
     consentDecisions: { [key: string]: Card } = {};
 
     calculateConsentDecisions(request: DataSharingCDSHookRequest) {
-        const ruleProvider = new DummyRuleProvider();
-        const engine = new ConsoleDataSharingEngine(ruleProvider, 0.0, false, false);
-        const tmpCategorySettings = new ConsentCategorySettings();
+        const moduleRegistry = this.moduleRegistryService.getRegistry();
+        const moduleProvider = new DummyDataSegmentationModuleProvider(moduleRegistry);
+        const engine = new ConsoleDataSharingEngine(moduleProvider, 0.0, false, false, moduleRegistry);
         if (this.prefetchResourcesLabeled) {
-            this.consentDecisions = engine.computeConsentDecisionsForResources(this.prefetchResourcesLabeled, this.consent, this.filterCategorySettings);
+            this.consentDecisions = engine.computeConsentDecisionsForResources(this.prefetchResourcesLabeled, this.consent);
         }
     }
 

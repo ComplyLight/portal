@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
-import { Card, DataSharingCDSHookRequest, DataSharingEngineContext } from '@asushares/core';
+import { Card, DataSharingCDSHookRequest, DataSharingEngineContext } from '@complylight/core';
 import { Parameters, Patient } from 'fhir/r5';
 import { HttpHeaders } from '@angular/common/http';
 
