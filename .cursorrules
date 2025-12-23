@@ -14,7 +14,7 @@ This is an Angular SPA project implement user-facing UIs for working with the Co
 - Use Angular best practices such as signals and computed
 - Use Bootstrap for layout and SCSS for stylesheets.
 - Use TypeScript for code.
-- Use the @types/fhir library for FHIR types. Use FHIR R4 definitions in "fhir/r4" unless otherwise requested.
+- Use the @types/fhir library for FHIR types. Use FHIR R5 definitions in "fhir/r5" unless otherwise requested.
 - When creating new .ts files, the first line should be "// Author: Preston Lee" followed by an empty line.
 - Assuming `npm run start` is already being run. Avoid starting server process. If you do don't forget to kill them.
 - Don't use deprecated APIs when possible.

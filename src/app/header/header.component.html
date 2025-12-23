@@ -1,0 +1,89 @@
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark" aria-label="Marketplace navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" [routerLink]="['/']", [routerLinkActive]="'active'" [routerLinkActiveOptions]="{exact: true}">
+            <!-- <img src="/assets/images/ComplyLight-logo.png" alt="ComplyLight Logo">&nbsp; -->
+            <!-- <i class="bi-fire"></i> -->
+            ComplyLight
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{exact: true}">
+                    <a class="nav-link" [routerLink]="['/patient']">
+                        <i class="bi-person"></i> Patient
+                    </a>
+                </li>
+
+                <li class="nav-item" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{exact: true}">
+                    <a class="nav-link" [routerLink]="['/provider']">
+                        <i class="bi-briefcase"></i> Provider
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown" [routerLinkActive]="'active'">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownConsentManager"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi-shield-check"></i> Consent Management
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownConsentManager">
+                        <li>
+                            <a class="dropdown-item" [routerLink]="['/manager/browser']" [routerLinkActive]="'active'"
+                                [routerLinkActiveOptions]="{exact: true}">
+                                <i class="bi-eye"></i> Browser
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" [routerLink]="['/manager/builder']" [routerLinkActive]="'active'"
+                                [routerLinkActiveOptions]="{exact: true}">
+                                <i class="bi-plus-circle"></i> Builder
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                @if (settingsService.settings.developer) {
+                    <li class="nav-item" [routerLinkActive]="'active'"
+                        [routerLinkActiveOptions]="{exact: true}">
+                        <a class="nav-link" [routerLink]="['/sandbox']">
+                            <i class="bi-code"></i> Testing Sandbox
+                        </a>
+                    </li>
+                }
+
+            </ul>
+
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown" [routerLinkActive]="'active'">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownAccount"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi-person-circle"></i> Account
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                        <li>
+                            <a class="dropdown-item" [routerLink]="['/settings']" [routerLinkActive]="'active'"
+                                [routerLinkActiveOptions]="{exact: true}">
+                                <i class="bi-gear"></i> Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://www.complylight.com/contact/" target="_blank">
+                                <i class="bi-chat"></i> Leave Feedback
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- <form>
+                <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+            </form> -->
+        </div>
+    </div>
+</nav>
+

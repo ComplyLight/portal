@@ -5,24 +5,24 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 
 import { BackendService } from './backend/backend.service';
-import { SettingsService } from './settings/settings.service';
 
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { CommonModule, NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
 
 
 @Component({
 	selector: 'app',
 	templateUrl: 'app.component.html',
 	styleUrl: 'app.component.scss',
-	imports: [ RouterLink, RouterLinkActive, CommonModule, RouterOutlet, FormsModule]
+	imports: [CommonModule, RouterOutlet, HeaderComponent, FooterComponent]
 })
 export class AppComponent implements OnInit {
 
 	currentYear: number = new Date().getFullYear();
 
-	constructor(protected http: HttpClient, protected backendService: BackendService, protected settingsService: SettingsService) {
+	constructor(protected http: HttpClient, protected backendService: BackendService) {
 		console.log("AppComponent has been initialized to establish router element.");
 	}
 
@@ -31,8 +31,6 @@ export class AppComponent implements OnInit {
 		this.detectJwtLaunch();
 
 	}
-
-	settings(): SettingsService { return this.settingsService; }
 
 	detectJwtLaunch(): void {
 		let root = (document.URL).split("?")[0];
