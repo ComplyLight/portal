@@ -1,0 +1,188 @@
+<div id="editor">
+
+    <div class="flex_wrapper">
+
+        <nav id="sidebar" [class.active]="sidebarActive" [class.inactive]="!sidebarActive"
+            class="editing">
+
+            @if (module) {
+                <div id="name_float" class="form-floating mb-3">
+                    <input class="form-control form-control-lg" name="name" type="text" required="true"
+                        [(ngModel)]="module.name" />
+                    <label for="name">Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input class="form-control form-control-sm" name="id" type="text" required="true"
+                        [(ngModel)]="module.id" />
+                    <label for="id">ID</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input class="form-control form-control-sm" name="version" type="text"
+                        [(ngModel)]="module.version" />
+                    <label for="version">Version</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <textarea class="form-control form-control-sm" name="description" 
+                        [(ngModel)]="module.description" rows="2"></textarea>
+                    <label for="description">Description</label>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" 
+                        [(ngModel)]="module.enabled" 
+                        id="module-enabled" />
+                    <label class="form-check-label" for="module-enabled">
+                        Enabled
+                    </label>
+                </div>
+
+                <ul class="list-unstyled components">
+
+                    <!-- CATEGORIES -->
+                    <li>
+                        <h4>
+                            Categories
+                            &nbsp;
+                            <button class="btn btn-sm btn-success" (click)="createCategory()"><i
+                                    class="bi bi-plus"></i></button>
+                        </h4>
+                        <ul class="list-group m-2">
+                            @for (cat of module.categories; track cat.act_code) {
+                                <li class="list-group-item">
+                                    <app-category [category]="cat" 
+                                        [allCategories]="module.categories"
+                                        [editing]="true"
+                                        (delete)="deleteCategory($event)"></app-category>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+
+                    <!-- PURPOSES -->
+                    <li>
+                        <h4>
+                            Purposes
+                            &nbsp;
+                            <button class="btn btn-sm btn-success" (click)="createPurpose()"><i
+                                    class="bi bi-plus"></i></button>
+                        </h4>
+                        <ul class="list-group m-2">
+                            @for (purpose of module.purposes; track purpose.act_code) {
+                                <li class="list-group-item">
+                                    <app-purpose [purpose]="purpose" 
+                                        [allPurposes]="module.purposes"
+                                        [editing]="true"
+                                        (delete)="deletePurpose($event)"></app-purpose>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+
+                    <!-- POLICIES -->
+                    <li>
+                        <h4>
+                            Policies
+                            &nbsp;
+                            <button class="btn btn-sm btn-success" (click)="createPolicy()"><i
+                                    class="bi bi-plus"></i></button>
+                        </h4>
+                        <ul class="list-group m-2">
+                            @if (module.policies) {
+                                @for (policy of module.policies; track policy.id) {
+                                <li class="list-group-item">
+                                    <app-policy [policy]="policy" 
+                                        [editing]="true"
+                                        (delete)="deletePolicy($event)"></app-policy>
+                                </li>
+                                }
+                            }
+                        </ul>
+                    </li>
+
+                    <!-- BINDINGS -->
+                    <li>
+                        <h4>
+                            Bindings
+                            &nbsp;
+                            <button class="btn btn-sm btn-success" (click)="createBinding()"><i
+                                    class="bi bi-plus"></i></button>
+                        </h4>
+                        <ul class="list-group m-2" id="bindings_list">
+                            @if (module.rules?.bindings) {
+                                @for (b of module.rules!.bindings; track b.id) {
+                                    <li class="list-group-item" role="button" 
+                                        [routerLinkActive]="'active'" 
+                                        [routerLink]="['bindings', b.id]">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <input class="form-control form-control-sm" type="text" required="true"
+                                                    [class.selected]="b.id == selectedBindingId()" [(ngModel)]="b.id" />
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <span class="m-1 p-2 badge rounded-pill text-bg-primary">
+                                                    {{totalCodesFor(b)}}
+                                                </span>
+                                                <div class="btn-group align-start">
+                                                    <a class="btn btn-small btn-default" (click)="deleteBinding(b)"><span
+                                                            class="bi bi-trash"></span></a>
+                                                    <a class="btn btn-small btn-dark-outline" (click)="duplicateBinding(b)"><span
+                                                            class="bi bi-files"></span></a>
+                                                    @if (canMoveUp(b, module.rules!.bindings)) {
+                                                        <a class="btn btn-small" (click)="moveUp(b, module.rules!.bindings)"><span
+                                                                class="bi bi-chevron-up"></span></a>
+                                                    }
+                                                    @if (canMoveDown(b, module.rules!.bindings)) {
+                                                        <a class="btn btn-small" (click)="moveDown(b, module.rules!.bindings)"><span
+                                                                class="bi bi-chevron-down"></span></a>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </li>
+                </ul>
+
+                <div id="powered" class="mt-3">
+                    <div class="btn-group mt-3">
+                        <button id="download_button" class="btn btn-sm btn-dark" (click)="downloadModule()"><span
+                                class="bi-download"></span>&nbsp;Download</button>
+                    </div>
+                    <br>
+                    <br>
+                    @if (statusService.permissions.edit && dataService.savable()) {
+                        <button id="save_button" class="btn btn-sm btn-dark" (click)="saveToServer()"><span
+                                class="bi-cloud-upload"></span>&nbsp;Save to Server</button>
+                    }
+                    @if (statusService.permissions.edit) {
+                        <div class="form-check mt-3 ms-1">
+                            <input id="download_editable_switch" class="form-check-input" type="checkbox"
+                                name="download_editable" [(ngModel)]="download_locked" />
+                            <label class="form-check-label" for="download_editable_switch"><span
+                                    class="bi bi-lock"></span> Lock Download</label>
+                        </div>
+                    }
+                    <br />
+                    <div class="btn-group">
+                        <button id="open_button" class="btn btn-sm btn-dark" [routerLink]="['/system/modules']"><span
+                                class="bi-folder2-open"></span> Close Module</button>
+                    </div>
+                </div>
+            }
+        </nav>
+
+        <div id="content">
+            <button type="button" id="sidebarCollapse" class='navbar-btn' [class.active]="sidebarActive"
+                [class.inactive]="!sidebarActive" (click)="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <router-outlet></router-outlet>
+
+        </div>
+    </div>
+</div>
+

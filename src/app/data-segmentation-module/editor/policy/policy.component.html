@@ -1,0 +1,46 @@
+<div class="policy-item">
+  <div class="row mb-2">
+    <div class="col-sm-3">
+      <div class="form-floating">
+        <input class="form-control form-control-sm" type="text" 
+          [(ngModel)]="policy.id" 
+          (ngModelChange)="onUpdate()" />
+        <label>ID</label>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-floating">
+        <input class="form-control form-control-sm" type="text" 
+          [(ngModel)]="policy.name" 
+          (ngModelChange)="onUpdate()" />
+        <label>Name</label>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-floating">
+        <input class="form-control form-control-sm" type="text" 
+          [(ngModel)]="policy.control_authority" 
+          (ngModelChange)="onUpdate()" />
+        <label>Control Authority</label>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="btn-group">
+        <button class="btn btn-sm btn-danger" (click)="onDelete()">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <div class="col-sm-12">
+      <div class="form-floating">
+        <input class="form-control form-control-sm" type="text" 
+          [(ngModel)]="policy.control_id" 
+          (ngModelChange)="onUpdate()" />
+        <label>Control ID</label>
+      </div>
+    </div>
+  </div>
+</div>
+

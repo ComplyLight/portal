@@ -11,6 +11,9 @@ import { LoginComponent } from './login/login.component';
 import { PatientPortalComponent } from './patient-portal/patient-portal.component';
 import { PatientConsentBuilderComponent } from './patient-consent-builder/patient-consent-builder.component';
 import { ProviderPortalComponent } from './provider-portal/provider-portal.component';
+import { DataSegmentationModuleComponent } from './data-segmentation-module/data-segmentation-module.component';
+import { DataSegmentationModuleEditorComponent } from './data-segmentation-module/editor/data-segmentation-module-editor.component';
+import { BindingComponent } from './data-segmentation-module/editor/binding/binding.component';
 
 
 const routes: Routes = [
@@ -27,7 +30,18 @@ const routes: Routes = [
   },
   { path: 'portal/:patient_id', component: PatientPortalComponent },
   { path: 'portal/:patient_id/consent', component: PatientConsentBuilderComponent },
-  { path: 'provider', component: ProviderPortalComponent }
+  { path: 'provider', component: ProviderPortalComponent },
+  { path: 'system/modules', component: DataSegmentationModuleComponent },
+  {
+    path: 'system/modules/:id/edit',
+    component: DataSegmentationModuleEditorComponent,
+    children: [
+      {
+        path: 'bindings/:id',
+        component: BindingComponent
+      }
+    ]
+  }
 ]
 
 @NgModule({

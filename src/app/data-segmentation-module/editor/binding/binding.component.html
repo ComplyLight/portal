@@ -1,0 +1,277 @@
+@if (binding) {
+<div id="rule" class="container">
+
+    <h1><span [innerText]="binding.id"></span></h1>
+
+        <section class="mt-4">
+            <h4>Category & Purpose</h4>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        <select class="form-select form-select-sm" [(ngModel)]="binding.category">
+                            <option [value]="''">Select Category</option>
+                            @for (cat of availableCategories(); track cat.act_code) {
+                                <option [value]="cat.act_code">{{cat.name}} ({{cat.act_code}})</option>
+                            }
+                        </select>
+                        <label>Category</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        <select class="form-select form-select-sm" [(ngModel)]="binding.purpose">
+                            <option [value]="''">Select Purpose</option>
+                            @for (purpose of availablePurposes(); track purpose.act_code) {
+                                <option [value]="purpose.act_code">{{purpose.name}} ({{purpose.act_code}})</option>
+                            }
+                        </select>
+                        <label>Purpose</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-4">
+            <h4>Policies</h4>
+            <div class="row">
+                @for (policy of availablePolicies(); track policy.id) {
+                    <div class="col-sm-6 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" 
+                                [checked]="isPolicySelected(policy)"
+                                (change)="togglePolicy(policy)"
+                                [id]="'policy-' + policy.id" />
+                            <label class="form-check-label" [for]="'policy-' + policy.id">
+                                {{policy.name}} ({{policy.id}})
+                            </label>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <section>
+            <h4>Basis</h4>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        <input class="form-control form-control-sm" name="binding_basis_system" type="text" required="true"
+                            [(ngModel)]="binding.basis.system" />
+                        <label for="binding_basis_system">System</label>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-floating">
+                        <input class="form-control form-control-sm" name="binding_basis_code" type="text" required="true"
+                            [(ngModel)]="binding.basis.code" />
+                        <label for="binding_basis_code">Code</label>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-floating">
+                        <input class="form-control form-control-sm" name="binding_basis_display" type="text"
+                            required="true" [(ngModel)]="binding.basis.display" />
+                        <label for="binding_basis_display">Display</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-4">
+            <h4>Labels <button class="btn btn-sm btn-success" (click)="createLabel()"><i
+                        class="bi bi-plus"></i></button>
+            </h4>
+            @if (binding.labels) {
+                @for (l of binding.labels; track $index) {
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-floating">
+                                <input class="form-control form-control-sm" name="binding_system" type="text" required="true"
+                                    [(ngModel)]="l.system" />
+                                <label for="binding_system">System</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-floating">
+                                <input class="form-control form-control-sm" name="binding_code" type="text" required="true"
+                                    [(ngModel)]="l.code" />
+                                <label for="binding_code">Code</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-floating">
+                                <input class="form-control form-control-sm" name="binding_display" type="text" required="true"
+                                    [(ngModel)]="l.display" />
+                                <label for="binding_display">Display</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="btn-group">
+                                <a class="btn btn-small btn-dark" (click)="deleteLabel($index)"><span
+                                        class="bi bi-trash"></span></a>
+                                @if (canMoveUp(l, binding.labels)) {
+                                    <a class="btn btn-small btn-dark" (click)="moveUp(l, binding.labels)"><span class="bi bi-chevron-up"></span></a>
+                                }
+                                @if (!canMoveUp(l, binding.labels)) {
+                                    <a class="btn btn-small btn-dark disabled"><span class="bi bi-chevron-up"></span></a>
+                                }
+                                @if (!canMoveDown(l, binding.labels)) {
+                                    <a class="btn btn-small btn-dark disabled"><span class="bi bi-chevron-down"></span></a>
+                                }
+                                @if (canMoveDown(l, binding.labels)) {
+                                    <a class="btn btn-small btn-dark" (click)="moveDown(l, binding.labels)"><span class="bi bi-chevron-down"></span></a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </section>
+
+        <section class="mt-4">
+            <div class="row">
+                <div class="col-sm-3">
+                    <h4>Code Groups <button class="btn btn-sm btn-success" (click)="createCodeSet()"><i
+                                class="bi bi-plus"></i></button>
+                    </h4>
+                    @for (cs of binding.codeSets; track $index) {
+                        <div class="row" (click)="selectCodeSet(cs)">
+                            <div class="col-sm-6">
+                                <input class="form-control form-control-sm" type="text" required="true"
+                                    [(ngModel)]="cs.groupID" [class.selected]="cs.groupID == selectedCodeSet?.groupID" />
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="btn-group align-start">
+                                    <a class="btn btn-small btn-default" (click)="deleteCodeSet($index)"><span
+                                            class="bi bi-trash"></span></a>
+                                    @if (canMoveUp(cs, binding.codeSets)) {
+                                        <a class="btn btn-small btn-dark" (click)="moveUp(cs, binding.codeSets)"><span class="bi bi-chevron-up"></span></a>
+                                    }
+                                    @if (!canMoveUp(cs, binding.codeSets)) {
+                                        <a class="btn btn-small btn-dark disabled"><span class="bi bi-chevron-up"></span></a>
+                                    }
+                                    @if (canMoveDown(cs, binding.codeSets)) {
+                                        <a class="btn btn-small btn-dark" (click)="moveDown(cs, binding.codeSets)"><span class="bi bi-chevron-down"></span></a>
+                                    }
+                                    @if (!canMoveDown(cs, binding.codeSets)) {
+                                        <a class="btn btn-small btn-dark disabled"><span class="bi bi-chevron-down"></span></a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @if (selectedCodeSet) {
+                    <div class="col-sm-9">
+                        <h6>
+                            <button class="btn btn-sm btn-success" (click)="createCode()"><i class="bi bi-plus"></i>
+                                Code</button> &nbsp;
+                            <button class="btn btn-sm btn-success" [class.active]="showBulkImport" data-bs-toggle="button"
+                                (click)="toggleBulkImport()"><i class="bi bi-card-list"></i>
+                                Code List Importer</button> &nbsp;
+                            <button class="btn btn-sm btn-success" [class.active]="showCsvImport" data-bs-toggle="button"
+                                (click)="toggleCsvImport()"><i class="bi bi-card-list"></i>
+                                CSV Importer</button> &nbsp;
+                            <button class="btn btn-sm btn-success" (click)="deduplicateCodes(selectedCodeSet)"><i
+                                    class="bi bi-x-circle"></i>
+                                Remove Duplicates</button> &nbsp;
+                        </h6>
+
+                        @if (showBulkImport) {
+                            <div class="form-floating">
+                                <input class="form-control form-control-sm" name="bulk_import_system" type="text"
+                                    required="true" [(ngModel)]="bulkImportSystem" />
+                                <label for="bulk_import_system">Code System</label>
+                            </div>
+                            <div class="form-floating mt-2">
+                                <textarea class="form-control form-control-sm" name="bulk_import_codes" required="true"
+                                    [(ngModel)]="bulkImportCodes"></textarea>
+                                <label for="bulk_import_codes">Multiple Codes Separated by Whitespace and/or
+                                    Newlines</label>
+                            </div>
+                            <div class="form-floating mt-2">
+                                <input class="form-control form-control-sm" name="bulk_import_confidence" type="number"
+                                    step="0.1" min="0" max="1" required="true" [(ngModel)]="bulkImportConfidence" />
+                                <label for="bulk_import_confidence">Confidence</label>
+                            </div>
+                            <button class="btn btn-sm btn-success mt-2" (click)="runBulkImport()"><i class="bi bi-play"></i>
+                                Run</button>
+                        }
+
+                        @if (showCsvImport) {
+                            <div class="form-floating mt-2">
+                                <textarea class="form-control form-control-sm" name="csv_import_text" required="true"
+                                    [(ngModel)]="csvImportText"></textarea>
+                                <label for="csv_import_text">Paste CSV in the format: system, code, confidence. One per line.</label>
+                            </div>
+                            <div class="form-text"> Blank lines will be ignored, as well as any additional columns. Supported system URL are as follows:
+                                <ul>
+                                    @for (n of supportedCodeSystems; track n.system) {
+                                        <li>
+                                            - {{n.name}}: {{n.system}}
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            <button class="btn btn-sm btn-success mt-2" (click)="runCsvImport()"><i class="bi bi-play"></i>
+                                Run</button>
+                        }
+
+                        @if (selectedCodeSet.codes.length > 0) {
+                            <div class="mt-4">
+                                <div class="row">
+                                    <div class="col-sm-3">System</div>
+                                    <div class="col-sm-3">Code</div>
+                                    <div class="col-sm-3">Confidence</div>
+                                    <div class="col-sm-3"></div>
+                                </div>
+
+                                @for (c of selectedCodeSet.codes; track $index) {
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <input class="form-control form-control-sm" type="text" required="true"
+                                                [(ngModel)]="c.system" />
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <input class="form-control form-control-sm" type="text" required="true"
+                                                [(ngModel)]="c.code" />
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <input class="form-control form-control-sm" type="number" step="0.1" required="true"
+                                                min="0" max="1" [(ngModel)]="c.confidence" />
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="btn-group align-start">
+                                                <a class="btn btn-small btn-default" (click)="deleteCode($index)"><span
+                                                        class="bi bi-trash"></span></a>
+                                                <a class="btn btn-small btn-dark" (click)="duplicateCode(c)"><span
+                                                        class="bi bi-files"></span></a>
+                                                @if (canMoveUp(c, selectedCodeSet.codes)) {
+                                                    <a class="btn btn-small btn-dark" (click)="moveUp(c, selectedCodeSet.codes)"><span
+                                                            class="bi bi-chevron-up"></span></a>
+                                                }
+                                                @if (!canMoveUp(c, selectedCodeSet.codes)) {
+                                                    <a class="btn btn-small btn-dark disabled"><span
+                                                            class="bi bi-chevron-up"></span></a>
+                                                }
+                                                @if (canMoveDown(c, selectedCodeSet.codes)) {
+                                                    <a class="btn btn-small btn-dark" (click)="moveDown(c, selectedCodeSet.codes)"><span
+                                                            class="bi bi-chevron-down"></span></a>
+                                                }
+                                                @if (!canMoveDown(c, selectedCodeSet.codes)) {
+                                                    <a class="btn btn-small btn-dark disabled"><span
+                                                            class="bi bi-chevron-down"></span></a>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+</div>
+}
+

@@ -47,14 +47,28 @@
                     </ul>
                 </li>
 
-                @if (settingsService.settings.developer) {
-                    <li class="nav-item" [routerLinkActive]="'active'"
-                        [routerLinkActiveOptions]="{exact: true}">
-                        <a class="nav-link" [routerLink]="['/sandbox']">
-                            <i class="bi-code"></i> Testing Sandbox
-                        </a>
-                    </li>
-                }
+                <li class="nav-item dropdown" [routerLinkActive]="'active'">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownSystem"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi-gear"></i> System
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownSystem">
+                        <li>
+                            <a class="dropdown-item" [routerLink]="['/system/modules']" [routerLinkActive]="'active'"
+                                [routerLinkActiveOptions]="{exact: true}">
+                                <i class="bi-puzzle"></i> Modules
+                            </a>
+                        </li>
+                        @if (settingsService.settings.developer) {
+                            <li>
+                                <a class="dropdown-item" [routerLink]="['/sandbox']" [routerLinkActive]="'active'"
+                                    [routerLinkActiveOptions]="{exact: true}">
+                                    <i class="bi-code"></i> Testing Sandbox
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
 
             </ul>
 
