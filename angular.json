@@ -47,6 +47,9 @@
                             "node_modules/prismjs/components/prism-javascript.min.js",
                             "node_modules/prismjs/components/prism-json.min.js",
                             "node_modules/vanillajs-datepicker/dist/js/datepicker-full.js"
+                        ],
+                        "allowedCommonJsDependencies": [
+                            "ajv"
                         ]
                     },
                     "configurations": {

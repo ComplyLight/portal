@@ -48,7 +48,7 @@ type ResourceGroups = { [resourceType: string]: FhirResource[] };
                 </table>
               </div>
               <div *ngIf="selectedOrg" class="mt-2">
-                <span class="badge text-bg-secondary">Selected: {{ selectedOrg?.name }} ({{ selectedOrg?.id }})</span>
+                <span class="badge text-bg-secondary">Selected: {{ selectedOrg.name }} ({{ selectedOrg.id }})</span>
               </div>
             </div>
             <div class="col-md-6">
