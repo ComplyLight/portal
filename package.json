@@ -33,7 +33,8 @@
         "uuid": "~13",
         "vanillajs-datepicker": "^1.3.4",
         "yaml": "^2.8.2",
-        "zone.js": "^0.16"
+        "zone.js": "^0.16",
+        "ajv": "^8.17.1"
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "~21.0.4",
@@ -45,6 +46,7 @@
         "@types/node": "^25.0.3",
         "@types/uuid": "^11.0.0",
         "@types/vanillajs-datepicker": "^1.3.5",
+        "@types/ajv": "^8.12.0",
         "jasmine-core": "~5.13.0",
         "karma": "~6.4.4",
         "karma-chrome-launcher": "~3.2.0",

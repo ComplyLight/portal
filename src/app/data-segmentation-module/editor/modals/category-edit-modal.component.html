@@ -1,0 +1,50 @@
+<div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ category.act_code === 'NEW' ? 'Add Category' : 'Edit Category' }}</h5>
+                <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="category-code" class="form-label">Code</label>
+                        <input type="text" class="form-control" id="category-code" [(ngModel)]="category.act_code" name="code" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="category-name" [(ngModel)]="category.name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category-system" class="form-label">System</label>
+                        <input type="text" class="form-control" id="category-system" [(ngModel)]="category.system" name="system">
+                    </div>
+                    <div class="mb-3">
+                        <label for="category-parent" class="form-label">Parent Category</label>
+                        <select class="form-select" id="category-parent" [ngModel]="parentCode()" (ngModelChange)="setParent($event)" name="parent">
+                            <option [value]="''">No Parent</option>
+                            @for (parent of availableParents(); track parent.act_code) {
+                                <option [value]="parent.act_code">{{parent.name}} ({{parent.act_code}})</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="category-description" [(ngModel)]="category.description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="category-enabled" [(ngModel)]="category.enabled" name="enabled">
+                        <label class="form-check-label" for="category-enabled">
+                            Enabled
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+                <button type="button" class="btn btn-primary" (click)="onSave()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+

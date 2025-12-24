@@ -1,277 +1,320 @@
 @if (binding) {
-<div id="rule" class="container">
+<div class="container-fluid mt-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a [routerLink]="['/system/modules']">Modules</a></li>
+                    <li class="breadcrumb-item"><a [routerLink]="['/system/modules', module?.id, 'edit']">{{ module?.name }}</a></li>
+                    <li class="breadcrumb-item active">Binding: {{ binding.id }}</li>
+                </ol>
+            </nav>
+            <h2 class="mb-0">{{ binding.id }}</h2>
+        </div>
+        <div>
+            <a class="btn btn-outline-secondary" [routerLink]="['/system/modules', module?.id, 'edit']" id="back-to-module-button">
+                <i class="bi bi-arrow-left"></i> Back to Module
+            </a>
+        </div>
+    </div>
 
-    <h1><span [innerText]="binding.id"></span></h1>
-
-        <section class="mt-4">
-            <h4>Category & Purpose</h4>
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-floating">
-                        <select class="form-select form-select-sm" [(ngModel)]="binding.category">
+    <div class="row">
+        <!-- Left Column: Basic Info -->
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Category & Purpose</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="binding-category" class="form-label">Category</label>
+                        <select class="form-select" id="binding-category" [(ngModel)]="binding.category">
                             <option [value]="''">Select Category</option>
                             @for (cat of availableCategories(); track cat.act_code) {
                                 <option [value]="cat.act_code">{{cat.name}} ({{cat.act_code}})</option>
                             }
                         </select>
-                        <label>Category</label>
                     </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-floating">
-                        <select class="form-select form-select-sm" [(ngModel)]="binding.purpose">
+                    <div class="mb-3">
+                        <label for="binding-purpose" class="form-label">Purpose</label>
+                        <select class="form-select" id="binding-purpose" [(ngModel)]="binding.purpose">
                             <option [value]="''">Select Purpose</option>
                             @for (purpose of availablePurposes(); track purpose.act_code) {
                                 <option [value]="purpose.act_code">{{purpose.name}} ({{purpose.act_code}})</option>
                             }
                         </select>
-                        <label>Purpose</label>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <section class="mt-4">
-            <h4>Policies</h4>
-            <div class="row">
-                @for (policy of availablePolicies(); track policy.id) {
-                    <div class="col-sm-6 mb-2">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" 
-                                [checked]="isPolicySelected(policy)"
-                                (change)="togglePolicy(policy)"
-                                [id]="'policy-' + policy.id" />
-                            <label class="form-check-label" [for]="'policy-' + policy.id">
-                                {{policy.name}} ({{policy.id}})
-                            </label>
-                        </div>
-                    </div>
-                }
-            </div>
-        </section>
-
-        <section>
-            <h4>Basis</h4>
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-floating">
-                        <input class="form-control form-control-sm" name="binding_basis_system" type="text" required="true"
-                            [(ngModel)]="binding.basis.system" />
-                        <label for="binding_basis_system">System</label>
-                    </div>
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Basis</h5>
                 </div>
-                <div class="col-sm-3">
-                    <div class="form-floating">
-                        <input class="form-control form-control-sm" name="binding_basis_code" type="text" required="true"
-                            [(ngModel)]="binding.basis.code" />
-                        <label for="binding_basis_code">Code</label>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="binding-basis-system" class="form-label">System</label>
+                        <input type="text" class="form-control" id="binding-basis-system" [(ngModel)]="binding.basis.system" required>
                     </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-floating">
-                        <input class="form-control form-control-sm" name="binding_basis_display" type="text"
-                            required="true" [(ngModel)]="binding.basis.display" />
-                        <label for="binding_basis_display">Display</label>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="mt-4">
-            <h4>Labels <button class="btn btn-sm btn-success" (click)="createLabel()"><i
-                        class="bi bi-plus"></i></button>
-            </h4>
-            @if (binding.labels) {
-                @for (l of binding.labels; track $index) {
                     <div class="row">
-                        <div class="col-sm-3">
-                            <div class="form-floating">
-                                <input class="form-control form-control-sm" name="binding_system" type="text" required="true"
-                                    [(ngModel)]="l.system" />
-                                <label for="binding_system">System</label>
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="binding-basis-code" class="form-label">Code</label>
+                            <input type="text" class="form-control" id="binding-basis-code" [(ngModel)]="binding.basis.code" required>
                         </div>
-                        <div class="col-sm-3">
-                            <div class="form-floating">
-                                <input class="form-control form-control-sm" name="binding_code" type="text" required="true"
-                                    [(ngModel)]="l.code" />
-                                <label for="binding_code">Code</label>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="form-floating">
-                                <input class="form-control form-control-sm" name="binding_display" type="text" required="true"
-                                    [(ngModel)]="l.display" />
-                                <label for="binding_display">Display</label>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="btn-group">
-                                <a class="btn btn-small btn-dark" (click)="deleteLabel($index)"><span
-                                        class="bi bi-trash"></span></a>
-                                @if (canMoveUp(l, binding.labels)) {
-                                    <a class="btn btn-small btn-dark" (click)="moveUp(l, binding.labels)"><span class="bi bi-chevron-up"></span></a>
-                                }
-                                @if (!canMoveUp(l, binding.labels)) {
-                                    <a class="btn btn-small btn-dark disabled"><span class="bi bi-chevron-up"></span></a>
-                                }
-                                @if (!canMoveDown(l, binding.labels)) {
-                                    <a class="btn btn-small btn-dark disabled"><span class="bi bi-chevron-down"></span></a>
-                                }
-                                @if (canMoveDown(l, binding.labels)) {
-                                    <a class="btn btn-small btn-dark" (click)="moveDown(l, binding.labels)"><span class="bi bi-chevron-down"></span></a>
-                                }
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="binding-basis-display" class="form-label">Display</label>
+                            <input type="text" class="form-control" id="binding-basis-display" [(ngModel)]="binding.basis.display" required>
                         </div>
                     </div>
-                }
-            }
-        </section>
+                </div>
+            </div>
 
-        <section class="mt-4">
-            <div class="row">
-                <div class="col-sm-3">
-                    <h4>Code Groups <button class="btn btn-sm btn-success" (click)="createCodeSet()"><i
-                                class="bi bi-plus"></i></button>
-                    </h4>
-                    @for (cs of binding.codeSets; track $index) {
-                        <div class="row" (click)="selectCodeSet(cs)">
-                            <div class="col-sm-6">
-                                <input class="form-control form-control-sm" type="text" required="true"
-                                    [(ngModel)]="cs.groupID" [class.selected]="cs.groupID == selectedCodeSet?.groupID" />
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="btn-group align-start">
-                                    <a class="btn btn-small btn-default" (click)="deleteCodeSet($index)"><span
-                                            class="bi bi-trash"></span></a>
-                                    @if (canMoveUp(cs, binding.codeSets)) {
-                                        <a class="btn btn-small btn-dark" (click)="moveUp(cs, binding.codeSets)"><span class="bi bi-chevron-up"></span></a>
-                                    }
-                                    @if (!canMoveUp(cs, binding.codeSets)) {
-                                        <a class="btn btn-small btn-dark disabled"><span class="bi bi-chevron-up"></span></a>
-                                    }
-                                    @if (canMoveDown(cs, binding.codeSets)) {
-                                        <a class="btn btn-small btn-dark" (click)="moveDown(cs, binding.codeSets)"><span class="bi bi-chevron-down"></span></a>
-                                    }
-                                    @if (!canMoveDown(cs, binding.codeSets)) {
-                                        <a class="btn btn-small btn-dark disabled"><span class="bi bi-chevron-down"></span></a>
-                                    }
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Policies</h5>
+                </div>
+                <div class="card-body">
+                    @if (availablePolicies().length === 0) {
+                        <p class="text-muted mb-0">No policies defined in the module.</p>
+                    } @else {
+                        <div class="row">
+                            @for (policy of availablePolicies(); track policy.id) {
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                            [checked]="isPolicySelected(policy)"
+                                            (change)="togglePolicy(policy)"
+                                            [id]="'policy-' + policy.id" />
+                                        <label class="form-check-label" [for]="'policy-' + policy.id">
+                                            {{policy.name}} <small class="text-muted">({{policy.id}})</small>
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         </div>
                     }
                 </div>
-                @if (selectedCodeSet) {
-                    <div class="col-sm-9">
-                        <h6>
-                            <button class="btn btn-sm btn-success" (click)="createCode()"><i class="bi bi-plus"></i>
-                                Code</button> &nbsp;
-                            <button class="btn btn-sm btn-success" [class.active]="showBulkImport" data-bs-toggle="button"
-                                (click)="toggleBulkImport()"><i class="bi bi-card-list"></i>
-                                Code List Importer</button> &nbsp;
-                            <button class="btn btn-sm btn-success" [class.active]="showCsvImport" data-bs-toggle="button"
-                                (click)="toggleCsvImport()"><i class="bi bi-card-list"></i>
-                                CSV Importer</button> &nbsp;
-                            <button class="btn btn-sm btn-success" (click)="deduplicateCodes(selectedCodeSet)"><i
-                                    class="bi bi-x-circle"></i>
-                                Remove Duplicates</button> &nbsp;
-                        </h6>
+            </div>
+        </div>
 
-                        @if (showBulkImport) {
-                            <div class="form-floating">
-                                <input class="form-control form-control-sm" name="bulk_import_system" type="text"
-                                    required="true" [(ngModel)]="bulkImportSystem" />
-                                <label for="bulk_import_system">Code System</label>
-                            </div>
-                            <div class="form-floating mt-2">
-                                <textarea class="form-control form-control-sm" name="bulk_import_codes" required="true"
-                                    [(ngModel)]="bulkImportCodes"></textarea>
-                                <label for="bulk_import_codes">Multiple Codes Separated by Whitespace and/or
-                                    Newlines</label>
-                            </div>
-                            <div class="form-floating mt-2">
-                                <input class="form-control form-control-sm" name="bulk_import_confidence" type="number"
-                                    step="0.1" min="0" max="1" required="true" [(ngModel)]="bulkImportConfidence" />
-                                <label for="bulk_import_confidence">Confidence</label>
-                            </div>
-                            <button class="btn btn-sm btn-success mt-2" (click)="runBulkImport()"><i class="bi bi-play"></i>
-                                Run</button>
-                        }
-
-                        @if (showCsvImport) {
-                            <div class="form-floating mt-2">
-                                <textarea class="form-control form-control-sm" name="csv_import_text" required="true"
-                                    [(ngModel)]="csvImportText"></textarea>
-                                <label for="csv_import_text">Paste CSV in the format: system, code, confidence. One per line.</label>
-                            </div>
-                            <div class="form-text"> Blank lines will be ignored, as well as any additional columns. Supported system URL are as follows:
-                                <ul>
-                                    @for (n of supportedCodeSystems; track n.system) {
-                                        <li>
-                                            - {{n.name}}: {{n.system}}
-                                        </li>
+        <!-- Right Column: Labels and Code Sets -->
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Labels</h5>
+                    <button class="btn btn-sm btn-primary" (click)="createLabel()" id="add-label-button">
+                        <i class="bi bi-plus"></i> Add Label
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (!binding.labels || binding.labels.length === 0) {
+                        <p class="text-muted mb-0">No labels defined.</p>
+                    } @else {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>System</th>
+                                        <th>Code</th>
+                                        <th>Display</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (l of binding.labels; track $index) {
+                                        <tr>
+                                            <td><input type="text" class="form-control form-control-sm" [(ngModel)]="l.system"></td>
+                                            <td><input type="text" class="form-control form-control-sm" [(ngModel)]="l.code"></td>
+                                            <td><input type="text" class="form-control form-control-sm" [(ngModel)]="l.display"></td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    @if (canMoveUp(l, binding.labels)) {
+                                                        <button class="btn btn-outline-secondary" (click)="moveUp(l, binding.labels)">
+                                                            <i class="bi bi-chevron-up"></i>
+                                                        </button>
+                                                    }
+                                                    @if (canMoveDown(l, binding.labels)) {
+                                                        <button class="btn btn-outline-secondary" (click)="moveDown(l, binding.labels)">
+                                                            <i class="bi bi-chevron-down"></i>
+                                                        </button>
+                                                    }
+                                                    <button class="btn btn-outline-danger" (click)="deleteLabel($index)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     }
-                                </ul>
-                            </div>
-                            <button class="btn btn-sm btn-success mt-2" (click)="runCsvImport()"><i class="bi bi-play"></i>
-                                Run</button>
-                        }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 
-                        @if (selectedCodeSet.codes.length > 0) {
-                            <div class="mt-4">
-                                <div class="row">
-                                    <div class="col-sm-3">System</div>
-                                    <div class="col-sm-3">Code</div>
-                                    <div class="col-sm-3">Confidence</div>
-                                    <div class="col-sm-3"></div>
-                                </div>
-
-                                @for (c of selectedCodeSet.codes; track $index) {
-                                    <div class="row">
-                                        <div class="col-sm-3">
-                                            <input class="form-control form-control-sm" type="text" required="true"
-                                                [(ngModel)]="c.system" />
+    <!-- Code Sets Section (Full Width) -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Code Sets</h5>
+            <button class="btn btn-sm btn-primary" (click)="createCodeSet()" id="add-codeset-button">
+                <i class="bi bi-plus"></i> Add Code Set
+            </button>
+        </div>
+        <div class="card-body">
+            @if (binding.codeSets.length === 0) {
+                <p class="text-muted mb-0">No code sets defined. Click "Add Code Set" to create one.</p>
+            } @else {
+                <div class="row">
+                    <!-- Code Set List (Left) -->
+                    <div class="col-md-3">
+                        <div class="list-group">
+                            @for (cs of binding.codeSets; track $index) {
+                                <div class="list-group-item d-flex justify-content-between align-items-center p-0">
+                                    <button type="button" 
+                                        class="btn btn-link text-start flex-grow-1 text-decoration-none" 
+                                        [class.active]="cs.groupID == selectedCodeSet?.groupID"
+                                        (click)="selectCodeSet(cs)">
+                                        <div class="d-flex justify-content-between align-items-center w-100">
+                                            <span>{{ cs.groupID || 'Unnamed' }}</span>
+                                            <span class="badge bg-primary">{{ cs.codes.length }}</span>
                                         </div>
-                                        <div class="col-sm-3">
-                                            <input class="form-control form-control-sm" type="text" required="true"
-                                                [(ngModel)]="c.code" />
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <input class="form-control form-control-sm" type="number" step="0.1" required="true"
-                                                min="0" max="1" [(ngModel)]="c.confidence" />
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <div class="btn-group align-start">
-                                                <a class="btn btn-small btn-default" (click)="deleteCode($index)"><span
-                                                        class="bi bi-trash"></span></a>
-                                                <a class="btn btn-small btn-dark" (click)="duplicateCode(c)"><span
-                                                        class="bi bi-files"></span></a>
-                                                @if (canMoveUp(c, selectedCodeSet.codes)) {
-                                                    <a class="btn btn-small btn-dark" (click)="moveUp(c, selectedCodeSet.codes)"><span
-                                                            class="bi bi-chevron-up"></span></a>
-                                                }
-                                                @if (!canMoveUp(c, selectedCodeSet.codes)) {
-                                                    <a class="btn btn-small btn-dark disabled"><span
-                                                            class="bi bi-chevron-up"></span></a>
-                                                }
-                                                @if (canMoveDown(c, selectedCodeSet.codes)) {
-                                                    <a class="btn btn-small btn-dark" (click)="moveDown(c, selectedCodeSet.codes)"><span
-                                                            class="bi bi-chevron-down"></span></a>
-                                                }
-                                                @if (!canMoveDown(c, selectedCodeSet.codes)) {
-                                                    <a class="btn btn-small btn-dark disabled"><span
-                                                            class="bi bi-chevron-down"></span></a>
-                                                }
-                                            </div>
-                                        </div>
+                                    </button>
+                                    <div class="btn-group btn-group-sm ms-2" (click)="$event.stopPropagation()">
+                                        @if (canMoveUp(cs, binding.codeSets)) {
+                                            <button class="btn btn-outline-secondary" (click)="moveUp(cs, binding.codeSets)" title="Move up">
+                                                <i class="bi bi-chevron-up"></i>
+                                            </button>
+                                        }
+                                        @if (canMoveDown(cs, binding.codeSets)) {
+                                            <button class="btn btn-outline-secondary" (click)="moveDown(cs, binding.codeSets)" title="Move down">
+                                                <i class="bi bi-chevron-down"></i>
+                                            </button>
+                                        }
+                                        <button class="btn btn-outline-danger" (click)="deleteCodeSet($index)" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
-                                }
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Code Set Editor (Right) -->
+                    <div class="col-md-9">
+                        @if (selectedCodeSet) {
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div class="flex-grow-1 me-3">
+                                        <input type="text" class="form-control form-control-sm" 
+                                            [(ngModel)]="selectedCodeSet.groupID" 
+                                            placeholder="Code Set ID">
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-success" (click)="createCode()" id="add-code-button">
+                                            <i class="bi bi-plus"></i> Add Code
+                                        </button>
+                                        <button class="btn btn-sm btn-info" [class.active]="showBulkImport" (click)="toggleBulkImport()" id="bulk-import-button">
+                                            <i class="bi bi-card-list"></i> Bulk Import
+                                        </button>
+                                        <button class="btn btn-sm btn-info" [class.active]="showCsvImport" (click)="toggleCsvImport()" id="csv-import-button">
+                                            <i class="bi bi-filetype-csv"></i> CSV Import
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" (click)="deduplicateCodes(selectedCodeSet)" id="deduplicate-button">
+                                            <i class="bi bi-x-circle"></i> Remove Duplicates
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    @if (showBulkImport) {
+                                        <div class="alert alert-info">
+                                            <div class="mb-2">
+                                                <label class="form-label">Code System</label>
+                                                <input type="text" class="form-control" [(ngModel)]="bulkImportSystem" placeholder="http://snomed.info/sct">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label">Codes (separated by whitespace)</label>
+                                                <textarea class="form-control" [(ngModel)]="bulkImportCodes" rows="4"></textarea>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label">Confidence</label>
+                                                <input type="number" class="form-control" step="0.1" min="0" max="1" [(ngModel)]="bulkImportConfidence">
+                                            </div>
+                                            <button class="btn btn-sm btn-primary" (click)="runBulkImport()">
+                                                <i class="bi bi-play"></i> Import
+                                            </button>
+                                        </div>
+                                    }
+
+                                    @if (showCsvImport) {
+                                        <div class="alert alert-info">
+                                            <label class="form-label">CSV Format: system, code, confidence (one per line)</label>
+                                            <textarea class="form-control" [(ngModel)]="csvImportText" rows="6"></textarea>
+                                            <small class="form-text">Supported systems: SNOMED CT, LOINC, RxNorm</small>
+                                            <button class="btn btn-sm btn-primary mt-2" (click)="runCsvImport()">
+                                                <i class="bi bi-play"></i> Import
+                                            </button>
+                                        </div>
+                                    }
+
+                                    @if (selectedCodeSet.codes.length > 0) {
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>System</th>
+                                                        <th>Code</th>
+                                                        <th>Confidence</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (c of selectedCodeSet.codes; track $index) {
+                                                        <tr>
+                                                            <td><input type="text" class="form-control form-control-sm" [(ngModel)]="c.system"></td>
+                                                            <td><input type="text" class="form-control form-control-sm" [(ngModel)]="c.code"></td>
+                                                            <td><input type="number" class="form-control form-control-sm" step="0.1" min="0" max="1" [(ngModel)]="c.confidence"></td>
+                                                            <td>
+                                                                <div class="btn-group btn-group-sm">
+                                                                    <button class="btn btn-outline-secondary" (click)="duplicateCode(c)">
+                                                                        <i class="bi bi-files"></i>
+                                                                    </button>
+                                                                    @if (canMoveUp(c, selectedCodeSet.codes)) {
+                                                                        <button class="btn btn-outline-secondary" (click)="moveUp(c, selectedCodeSet.codes)">
+                                                                            <i class="bi bi-chevron-up"></i>
+                                                                        </button>
+                                                                    }
+                                                                    @if (canMoveDown(c, selectedCodeSet.codes)) {
+                                                                        <button class="btn btn-outline-secondary" (click)="moveDown(c, selectedCodeSet.codes)">
+                                                                            <i class="bi bi-chevron-down"></i>
+                                                                        </button>
+                                                                    }
+                                                                    <button class="btn btn-outline-danger" (click)="deleteCode($index)">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    } @else {
+                                        <p class="text-muted text-center py-4">No codes in this code set. Use "Add Code" or import options above.</p>
+                                    }
+                                </div>
+                            </div>
+                        } @else {
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> Select a code set from the list to edit it.
                             </div>
                         }
                     </div>
-                }
-            </div>
-        </section>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 }
-

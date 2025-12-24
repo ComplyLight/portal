@@ -1,188 +1,432 @@
-<div id="editor">
-
-    <div class="flex_wrapper">
-
-        <nav id="sidebar" [class.active]="sidebarActive" [class.inactive]="!sidebarActive"
-            class="editing">
-
-            @if (module) {
-                <div id="name_float" class="form-floating mb-3">
-                    <input class="form-control form-control-lg" name="name" type="text" required="true"
-                        [(ngModel)]="module.name" />
-                    <label for="name">Name</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input class="form-control form-control-sm" name="id" type="text" required="true"
-                        [(ngModel)]="module.id" />
-                    <label for="id">ID</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input class="form-control form-control-sm" name="version" type="text"
-                        [(ngModel)]="module.version" />
-                    <label for="version">Version</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <textarea class="form-control form-control-sm" name="description" 
-                        [(ngModel)]="module.description" rows="2"></textarea>
-                    <label for="description">Description</label>
-                </div>
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" 
-                        [(ngModel)]="module.enabled" 
-                        id="module-enabled" />
-                    <label class="form-check-label" for="module-enabled">
-                        Enabled
-                    </label>
-                </div>
-
-                <ul class="list-unstyled components">
-
-                    <!-- CATEGORIES -->
-                    <li>
-                        <h4>
-                            Categories
-                            &nbsp;
-                            <button class="btn btn-sm btn-success" (click)="createCategory()"><i
-                                    class="bi bi-plus"></i></button>
-                        </h4>
-                        <ul class="list-group m-2">
-                            @for (cat of module.categories; track cat.act_code) {
-                                <li class="list-group-item">
-                                    <app-category [category]="cat" 
-                                        [allCategories]="module.categories"
-                                        [editing]="true"
-                                        (delete)="deleteCategory($event)"></app-category>
-                                </li>
-                            }
-                        </ul>
-                    </li>
-
-                    <!-- PURPOSES -->
-                    <li>
-                        <h4>
-                            Purposes
-                            &nbsp;
-                            <button class="btn btn-sm btn-success" (click)="createPurpose()"><i
-                                    class="bi bi-plus"></i></button>
-                        </h4>
-                        <ul class="list-group m-2">
-                            @for (purpose of module.purposes; track purpose.act_code) {
-                                <li class="list-group-item">
-                                    <app-purpose [purpose]="purpose" 
-                                        [allPurposes]="module.purposes"
-                                        [editing]="true"
-                                        (delete)="deletePurpose($event)"></app-purpose>
-                                </li>
-                            }
-                        </ul>
-                    </li>
-
-                    <!-- POLICIES -->
-                    <li>
-                        <h4>
-                            Policies
-                            &nbsp;
-                            <button class="btn btn-sm btn-success" (click)="createPolicy()"><i
-                                    class="bi bi-plus"></i></button>
-                        </h4>
-                        <ul class="list-group m-2">
-                            @if (module.policies) {
-                                @for (policy of module.policies; track policy.id) {
-                                <li class="list-group-item">
-                                    <app-policy [policy]="policy" 
-                                        [editing]="true"
-                                        (delete)="deletePolicy($event)"></app-policy>
-                                </li>
-                                }
-                            }
-                        </ul>
-                    </li>
-
-                    <!-- BINDINGS -->
-                    <li>
-                        <h4>
-                            Bindings
-                            &nbsp;
-                            <button class="btn btn-sm btn-success" (click)="createBinding()"><i
-                                    class="bi bi-plus"></i></button>
-                        </h4>
-                        <ul class="list-group m-2" id="bindings_list">
-                            @if (module.rules?.bindings) {
-                                @for (b of module.rules!.bindings; track b.id) {
-                                    <li class="list-group-item" role="button" 
-                                        [routerLinkActive]="'active'" 
-                                        [routerLink]="['bindings', b.id]">
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <input class="form-control form-control-sm" type="text" required="true"
-                                                    [class.selected]="b.id == selectedBindingId()" [(ngModel)]="b.id" />
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <span class="m-1 p-2 badge rounded-pill text-bg-primary">
-                                                    {{totalCodesFor(b)}}
-                                                </span>
-                                                <div class="btn-group align-start">
-                                                    <a class="btn btn-small btn-default" (click)="deleteBinding(b)"><span
-                                                            class="bi bi-trash"></span></a>
-                                                    <a class="btn btn-small btn-dark-outline" (click)="duplicateBinding(b)"><span
-                                                            class="bi bi-files"></span></a>
-                                                    @if (canMoveUp(b, module.rules!.bindings)) {
-                                                        <a class="btn btn-small" (click)="moveUp(b, module.rules!.bindings)"><span
-                                                                class="bi bi-chevron-up"></span></a>
-                                                    }
-                                                    @if (canMoveDown(b, module.rules!.bindings)) {
-                                                        <a class="btn btn-small" (click)="moveDown(b, module.rules!.bindings)"><span
-                                                                class="bi bi-chevron-down"></span></a>
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                }
-                            }
-                        </ul>
-                    </li>
-                </ul>
-
-                <div id="powered" class="mt-3">
-                    <div class="btn-group mt-3">
-                        <button id="download_button" class="btn btn-sm btn-dark" (click)="downloadModule()"><span
-                                class="bi-download"></span>&nbsp;Download</button>
-                    </div>
-                    <br>
-                    <br>
-                    @if (statusService.permissions.edit && dataService.savable()) {
-                        <button id="save_button" class="btn btn-sm btn-dark" (click)="saveToServer()"><span
-                                class="bi-cloud-upload"></span>&nbsp;Save to Server</button>
-                    }
-                    @if (statusService.permissions.edit) {
-                        <div class="form-check mt-3 ms-1">
-                            <input id="download_editable_switch" class="form-check-input" type="checkbox"
-                                name="download_editable" [(ngModel)]="download_locked" />
-                            <label class="form-check-label" for="download_editable_switch"><span
-                                    class="bi bi-lock"></span> Lock Download</label>
-                        </div>
-                    }
-                    <br />
-                    <div class="btn-group">
-                        <button id="open_button" class="btn btn-sm btn-dark" [routerLink]="['/system/modules']"><span
-                                class="bi-folder2-open"></span> Close Module</button>
-                    </div>
-                </div>
-            }
-        </nav>
-
-        <div id="content">
-            <button type="button" id="sidebarCollapse" class='navbar-btn' [class.active]="sidebarActive"
-                [class.inactive]="!sidebarActive" (click)="toggleSidebar()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-
-            <router-outlet></router-outlet>
-
+@if (loading()) {
+    <div class="container-fluid mt-3">
+        <div class="alert alert-info">
+            <i class="bi-hourglass-split"></i> Loading module...
         </div>
     </div>
-</div>
+}
+@if (!loading() && module()) {
+    <div class="container-fluid mt-3">
+    <!-- Router outlet for binding editor child route -->
+    @if (route.snapshot.firstChild && route.snapshot.firstChild.paramMap.get('id')) {
+        <router-outlet></router-outlet>
+    } @else {
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a [routerLink]="['/system/modules']">Modules</a></li>
+                    <li class="breadcrumb-item active">{{ module()?.name }}</li>
+                </ol>
+            </nav>
+            <h2 class="mb-0">{{ module()?.name }}</h2>
+            @if (module()?.version) {
+                <small class="text-muted">Version {{ module()?.version }}</small>
+            }
+        </div>
+        <div class="btn-group" role="group">
+            <button class="btn btn-outline-primary" (click)="validateModule()" [disabled]="isValidating" id="validate-button">
+                @if (isValidating) {
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                } @else {
+                    <i class="bi bi-check-circle"></i>
+                }
+                Validate
+            </button>
+            <button class="btn btn-outline-secondary" (click)="revertModule()" [disabled]="!dataService.hasChanges()" id="revert-button">
+                <i class="bi bi-arrow-counterclockwise"></i> Revert
+            </button>
+            <button class="btn btn-outline-success" (click)="downloadModule()" id="download-button">
+                <i class="bi bi-download"></i> Download
+            </button>
+            @if (statusService.permissions.edit && dataService.savable()) {
+                <button class="btn btn-primary" (click)="saveToServer()" [disabled]="isSaving" id="save-button">
+                    @if (isSaving) {
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    } @else {
+                        <i class="bi bi-cloud-upload"></i>
+                    }
+                    Save
+                </button>
+            }
+        </div>
+    </div>
 
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="module-editor-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab() === 'basic'" (click)="setActiveTab('basic')" type="button" id="tab-basic">
+                Basic Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab() === 'categories'" (click)="setActiveTab('categories')" type="button" id="tab-categories">
+                Categories
+                @if (module()?.categories && module()!.categories.length > 0) {
+                    <span class="badge bg-secondary ms-1">{{ module()!.categories.length }}</span>
+                }
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab() === 'purposes'" (click)="setActiveTab('purposes')" type="button" id="tab-purposes">
+                Purposes
+                @if (module()?.purposes && module()!.purposes.length > 0) {
+                    <span class="badge bg-secondary ms-1">{{ module()!.purposes.length }}</span>
+                }
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab() === 'policies'" (click)="setActiveTab('policies')" type="button" id="tab-policies">
+                Policies
+                @if (module()?.policies && module()!.policies!.length > 0) {
+                    <span class="badge bg-secondary ms-1">{{ module()!.policies!.length }}</span>
+                }
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab() === 'bindings'" (click)="setActiveTab('bindings')" type="button" id="tab-bindings">
+                Bindings
+                @if (getBindingsCount() > 0) {
+                    <span class="badge bg-secondary ms-1">{{ getBindingsCount() }}</span>
+                }
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Basic Info Tab -->
+        @if (activeTab() === 'basic') {
+            <div class="card">
+                <div class="card-body">
+                    <form>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="module-id" class="form-label">ID</label>
+                                <input type="text" class="form-control" id="module-id" [ngModel]="module()?.id" (ngModelChange)="updateModuleField('id', $event)" name="id" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="module-name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="module-name" [ngModel]="module()?.name" (ngModelChange)="updateModuleField('name', $event)" name="name" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="module-version" class="form-label">Version</label>
+                                <input type="text" class="form-control" id="module-version" [ngModel]="module()?.version" (ngModelChange)="updateModuleField('version', $event)" name="version">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="module-enabled" [ngModel]="module()?.enabled" (ngModelChange)="updateModuleField('enabled', $event)" name="enabled">
+                                    <label class="form-check-label" for="module-enabled">
+                                        Enabled
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="module-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="module-description" [ngModel]="module()?.description" (ngModelChange)="updateModuleField('description', $event)" name="description" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+
+        <!-- Categories Tab -->
+        @if (activeTab() === 'categories') {
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Categories</h5>
+                    <button class="btn btn-sm btn-primary" (click)="openCategoryModal()" id="add-category-button">
+                        <i class="bi bi-plus"></i> Add Category
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (!module()?.categories || module()!.categories.length === 0) {
+                        <p class="text-muted text-center py-4">No categories defined. Click "Add Category" to create one.</p>
+                    } @else {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>System</th>
+                                        <th>Parent</th>
+                                        <th>Enabled</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (cat of (module()?.categories || []); track cat.act_code) {
+                                        <tr>
+                                            <td><code>{{ cat.act_code }}</code></td>
+                                            <td>{{ cat.name }}</td>
+                                            <td><small class="text-muted">{{ cat.system || 'N/A' }}</small></td>
+                                            <td><small class="text-muted">{{ cat.parent?.name || 'None' }}</small></td>
+                                            <td>
+                                                <span class="badge" [class.bg-success]="cat.enabled" [class.bg-secondary]="!cat.enabled">
+                                                    {{ cat.enabled ? 'Yes' : 'No' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" (click)="openCategoryModal(cat)" id="edit-category-{{cat.act_code}}">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" (click)="deleteCategory(cat)" id="delete-category-{{cat.act_code}}">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Purposes Tab -->
+        @if (activeTab() === 'purposes') {
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Purposes</h5>
+                    <button class="btn btn-sm btn-primary" (click)="openPurposeModal()" id="add-purpose-button">
+                        <i class="bi bi-plus"></i> Add Purpose
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (!module()?.purposes || module()!.purposes.length === 0) {
+                        <p class="text-muted text-center py-4">No purposes defined. Click "Add Purpose" to create one.</p>
+                    } @else {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>System</th>
+                                        <th>Parent</th>
+                                        <th>Enabled</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (purpose of (module()?.purposes || []); track purpose.act_code) {
+                                        <tr>
+                                            <td><code>{{ purpose.act_code }}</code></td>
+                                            <td>{{ purpose.name }}</td>
+                                            <td><small class="text-muted">{{ purpose.system || 'N/A' }}</small></td>
+                                            <td><small class="text-muted">{{ purpose.parent?.name || 'None' }}</small></td>
+                                            <td>
+                                                <span class="badge" [class.bg-success]="purpose.enabled" [class.bg-secondary]="!purpose.enabled">
+                                                    {{ purpose.enabled ? 'Yes' : 'No' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" (click)="openPurposeModal(purpose)" id="edit-purpose-{{purpose.act_code}}">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" (click)="deletePurpose(purpose)" id="delete-purpose-{{purpose.act_code}}">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Policies Tab -->
+        @if (activeTab() === 'policies') {
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Policies</h5>
+                    <button class="btn btn-sm btn-primary" (click)="openPolicyModal()" id="add-policy-button">
+                        <i class="bi bi-plus"></i> Add Policy
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (!module()?.policies || module()!.policies!.length === 0) {
+                        <p class="text-muted text-center py-4">No policies defined. Click "Add Policy" to create one.</p>
+                    } @else {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Control Authority</th>
+                                        <th>Control ID</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (policy of (module()?.policies || []); track policy.id) {
+                                        <tr>
+                                            <td><code>{{ policy.id }}</code></td>
+                                            <td>{{ policy.name }}</td>
+                                            <td>{{ policy.control_authority || 'N/A' }}</td>
+                                            <td>{{ policy.control_id || 'N/A' }}</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" (click)="openPolicyModal(policy)" id="edit-policy-{{policy.id}}">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" (click)="deletePolicy(policy)" id="delete-policy-{{policy.id}}">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Bindings Tab -->
+        @if (activeTab() === 'bindings') {
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Bindings</h5>
+                    <button class="btn btn-sm btn-primary" (click)="createBinding()" id="add-binding-button">
+                        <i class="bi bi-plus"></i> Add Binding
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (!module()?.rules?.bindings || getBindingsCount() === 0) {
+                        <p class="text-muted text-center py-4">No bindings defined. Click "Add Binding" to create one.</p>
+                    } @else {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Category</th>
+                                        <th>Purpose</th>
+                                        <th>Code Count</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (binding of (module()?.rules?.bindings || []); track binding.id) {
+                                        <tr>
+                                            <td><code>{{ binding.id }}</code></td>
+                                            <td>{{ getCategoryName(binding.category || '') || 'N/A' }}</td>
+                                            <td>{{ getPurposeName(binding.purpose || '') || 'N/A' }}</td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ totalCodesFor(binding) }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a class="btn btn-outline-primary" [routerLink]="['bindings', binding.id]" id="edit-binding-{{binding.id}}">
+                                                        <i class="bi bi-pencil"></i> Edit
+                                                    </a>
+                                                    <button class="btn btn-outline-secondary" (click)="duplicateBinding(binding)" id="duplicate-binding-{{binding.id}}">
+                                                        <i class="bi bi-files"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" (click)="deleteBinding(binding)" id="delete-binding-{{binding.id}}">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+    }
+    </div>
+}
+@if (!loading() && !module()) {
+    <div class="container-fluid mt-3">
+        <div class="alert alert-warning">
+            <i class="bi-exclamation-triangle"></i> No module loaded. <a [routerLink]="['/system/modules']">Return to modules list</a>
+        </div>
+    </div>
+}
+
+<!-- Validation Results Modal -->
+@if (showValidationModal) {
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Validation Results</h5>
+                    <button type="button" class="btn-close" (click)="closeValidationModal()" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (validationResult) {
+                        <app-validation-results [validationResult]="validationResult"></app-validation-results>
+                    } @else {
+                        <div class="alert alert-info">No validation results available.</div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="closeValidationModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Category Edit Modal -->
+    @if (showCategoryModal && editingCategory && module()) {
+    <app-category-edit-modal 
+        [category]="editingCategory"
+        [allCategories]="module()?.categories || []"
+        (save)="onCategorySave($event)"
+        (cancel)="closeCategoryModal()">
+    </app-category-edit-modal>
+}
+
+<!-- Purpose Edit Modal -->
+    @if (showPurposeModal && editingPurpose && module()) {
+    <app-purpose-edit-modal 
+        [purpose]="editingPurpose"
+        [allPurposes]="module()?.purposes || []"
+        (save)="onPurposeSave($event)"
+        (cancel)="closePurposeModal()">
+    </app-purpose-edit-modal>
+}
+
+<!-- Policy Edit Modal -->
+@if (showPolicyModal && editingPolicy) {
+    <app-policy-edit-modal 
+        [policy]="editingPolicy"
+        (save)="onPolicySave($event)"
+        (cancel)="closePolicyModal()">
+    </app-policy-edit-modal>
+}
+
+<!-- Confirmation Modal -->
+@if (showConfirmModal) {
+    <app-confirmation-modal
+        [title]="confirmTitle"
+        [message]="confirmMessage"
+        [confirmButtonClass]="confirmButtonClass"
+        (confirm)="onConfirm()"
+        (cancel)="onCancelConfirm()">
+    </app-confirmation-modal>
+}

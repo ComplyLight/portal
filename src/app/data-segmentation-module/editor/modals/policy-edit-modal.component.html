@@ -1,0 +1,35 @@
+<div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Policy</h5>
+                <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="policy-id" class="form-label">ID</label>
+                        <input type="text" class="form-control" id="policy-id" [(ngModel)]="policy.id" name="id" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="policy-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="policy-name" [(ngModel)]="policy.name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="policy-authority" class="form-label">Control Authority</label>
+                        <input type="text" class="form-control" id="policy-authority" [(ngModel)]="policy.control_authority" name="authority">
+                    </div>
+                    <div class="mb-3">
+                        <label for="policy-control-id" class="form-label">Control ID</label>
+                        <input type="text" class="form-control" id="policy-control-id" [(ngModel)]="policy.control_id" name="controlId">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+                <button type="button" class="btn btn-primary" (click)="onSave()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+

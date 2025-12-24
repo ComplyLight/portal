@@ -69,6 +69,11 @@ export class BindingComponent extends BaseComponent {
             }
             if (this.binding.codeSets.length > 0) {
               this.selectedCodeSet = this.binding.codeSets[0];
+            } else {
+              // Create a default code set if none exist
+              const cs = Binding.codeSetFromTemplate();
+              this.binding.codeSets.push(cs);
+              this.selectedCodeSet = cs;
             }
             // Initialize policies array if not present
             if (!this.binding.policies) {

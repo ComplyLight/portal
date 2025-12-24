@@ -11,7 +11,7 @@ This is an Angular SPA project implement user-facing UIs for working with the Co
 
 - This is an Angular project.
 - Use Angular control flow statements instead of the deprecated ngIf and ngFor directives.
-- Use Angular best practices such as signals and computed
+- Use Angular signals and computed for responsive change detection.
 - Use Bootstrap for layout and SCSS for stylesheets.
 - Use TypeScript for code.
 - Use the @types/fhir library for FHIR types. Use FHIR R5 definitions in "fhir/r5" unless otherwise requested.
@@ -20,7 +20,7 @@ This is an Angular SPA project implement user-facing UIs for working with the Co
 - Don't use deprecated APIs when possible.
 - Rely on Bootstrap styling. Avoid customizing components with custom CSS and new color schemes.
 - Ad "id" attributes to core UI and navigational controls to make tests less brittle.
-- Don't use setTimeout for state management purposes
+- Never use setTimeout for state management purposes
 - When creating components, split HTML and CSS into their own .html and .scss files, respectively.
 
 # SCSS and CSS

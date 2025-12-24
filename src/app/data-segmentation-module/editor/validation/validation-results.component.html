@@ -1,0 +1,28 @@
+@if (isValid) {
+    <div class="alert alert-success">
+        <i class="bi bi-check-circle"></i> Module is valid according to the schema.
+    </div>
+} @else {
+    <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i> Validation found {{ errors.length }} error(s):
+    </div>
+    <div class="list-group">
+        @for (error of errors; track $index) {
+            <div class="list-group-item list-group-item-danger">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">Error {{ $index + 1 }}</h6>
+                    <small>{{ error.instancePath || '/' }}</small>
+                </div>
+                <p class="mb-1">{{ getErrorMessage(error) }}</p>
+                @if (error.params) {
+                    <small class="text-muted">
+                        @for (param of getParamKeys(error.params); track param) {
+                            <span class="badge bg-secondary me-1">{{ param }}: {{ error.params[param] }}</span>
+                        }
+                    </small>
+                }
+            </div>
+        }
+    </div>
+}
+

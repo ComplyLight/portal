@@ -1,0 +1,50 @@
+<div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ purpose.act_code === 'NEW' ? 'Add Purpose' : 'Edit Purpose' }}</h5>
+                <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="purpose-code" class="form-label">Code</label>
+                        <input type="text" class="form-control" id="purpose-code" [(ngModel)]="purpose.act_code" name="code" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="purpose-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="purpose-name" [(ngModel)]="purpose.name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="purpose-system" class="form-label">System</label>
+                        <input type="text" class="form-control" id="purpose-system" [(ngModel)]="purpose.system" name="system">
+                    </div>
+                    <div class="mb-3">
+                        <label for="purpose-parent" class="form-label">Parent Purpose</label>
+                        <select class="form-select" id="purpose-parent" [ngModel]="parentCode()" (ngModelChange)="setParent($event)" name="parent">
+                            <option [value]="''">No Parent</option>
+                            @for (parent of availableParents(); track parent.act_code) {
+                                <option [value]="parent.act_code">{{parent.name}} ({{parent.act_code}})</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="purpose-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="purpose-description" [(ngModel)]="purpose.description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="purpose-enabled" [(ngModel)]="purpose.enabled" name="enabled">
+                        <label class="form-check-label" for="purpose-enabled">
+                            Enabled
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+                <button type="button" class="btn btn-primary" (click)="onSave()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
